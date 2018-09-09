@@ -28,9 +28,9 @@ Please make sure update properties before kick off any deployment.
 * Install node.js v8.10.0
 * Install serverless package
 * Setup environment variables or aws cli profile
-  * AWS_ACCESS_KEY_ID
-	* AWS_SECRET_ACCESS_KEY
-	* or aws configure
+ * AWS_ACCESS_KEY_ID
+ * AWS_SECRET_ACCESS_KEY
+ * or aws configure
 * Deploy API
 ```
 cd ./api
@@ -72,6 +72,9 @@ curl -X GET https://{{VPC_Endpoint_DNS_Name}}/dev/staffrosterdisplay -H'Host:{{A
 	aws apigateway get-rest-apis
 	```
 * Surely, if your on-prem connects to the VPC, you can run the test command on the a on-prem host.
+
+## Notes
+* The running environment is at my MacBook Pro and the test script is running on EC2 Amazon Linux instance.
 
 ## Reference Link
 
