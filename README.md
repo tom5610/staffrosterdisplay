@@ -1,5 +1,5 @@
 # Intro
-A demo private API service with:
+A private serverless API service demo with:
 * Private API Gateway
 * Lambda function
 * VPC Endpoint
