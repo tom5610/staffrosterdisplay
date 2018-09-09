@@ -34,6 +34,7 @@ Please make sure update properties before kick off any deployment.
 * Deploy API
 ```
 cd ./api
+npm install
 sls deploy
 ```
 
