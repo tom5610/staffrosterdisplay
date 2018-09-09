@@ -1,0 +1,26 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "execute-api:Invoke",
+            "Resource": [
+                "arn:aws:execute-api:{{t_Region}}:{{t_AWSAccountId}}:{{t_ApiId}}/*"
+            ]
+        },
+        {
+            "Effect": "Deny",
+            "Principal": "*",
+            "Action": "execute-api:Invoke",
+            "Resource": [
+                "arn:aws:execute-api:{{t_Region}}:{{t_AWSAccountId}}:{{t_ApiId}}/*"
+            ],
+            "Condition" : {
+                "StringNotEquals": {
+                    "aws:SourceVpce": "{{t_VPCEndpointId}}"
+                }
+            }
+        }
+    ]
+}

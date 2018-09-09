@@ -1,0 +1,14 @@
+- name:                         Launch VPC Endpoint
+  cloudformation:
+    stack_name:                 "{{ EndpointStackName }}"
+    state:                      present
+    region:                     "{{ Region }}"
+    disable_rollback:           true
+    template:                   roles/vpcendpoint/files/endpoint.yml
+    template_parameters:
+      VPCId:                    "{{ VPCId }}"
+      NumberOfAZs:              "{{ NumberOfAZs }}"
+      SubnetIdList:             "{{ SubnetIdList }}"
+      EndpointIngressCIDR:      "{{ EndpointIngressCIDR }}"
+    tags:
+      Stack:                    "{{ EndpointStackName }}"

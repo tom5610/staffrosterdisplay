@@ -1,0 +1,13 @@
+<html>
+<body>
+	<h1>Staff Roster</h1>
+
+	<% function user(user) { %>
+	  <li><strong><%= user.name %></strong> works in <%= user.location %> on <%= user.date %>.</li>
+	<% } %>
+
+	<ul>
+	  <% users.map(user) %>
+	</ul>
+</body>
+</html>

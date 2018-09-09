@@ -1,0 +1,71 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: VPC Endpoint for Private API Gateway.
+Parameters:
+  VPCId:
+    Description: VPC ID
+    Type: String
+  NumberOfAZs:
+    AllowedValues:
+      - '2'
+      - '3'
+    Default: '2'
+    Description: Number of Availability Zones to use in the VPC. This must match your
+      selections in the list of Availability Zones parameter.
+    Type: String
+  SubnetIdList:
+    Description: Subnet Id List with delimiter ','.
+    Type: String
+  EndpointIngressCIDR:
+    Description: VPC Endpoint Security Group Ingress Rule CIDR.
+    Type: String
+    Default: '10.0.0.0/8'
+Conditions:
+  DeployedOn2AZs: !Equals
+    - !Ref 'NumberOfAZs'
+    - '2'
+  3AZCondition: !Equals
+    - !Ref 'NumberOfAZs'
+    - '3'
+Resources:
+  EndpointSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enables outbound internet access for the VPC via the NAT instances
+      VpcId: !Ref 'VPCId'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: !Ref 'EndpointIngressCIDR'
+  VPCEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref 'VPCId'
+      ServiceName: !Join [ ".", [ "com.amazonaws", !Ref "AWS::Region", "execute-api" ] ]
+      VpcEndpointType: Interface
+      PrivateDnsEnabled: False
+      SubnetIds:
+        - !Select
+          - '0'
+          - !Split
+            - ','
+            - !Ref 'SubnetIdList'
+        - !Select
+          - '1'
+          - !Split
+            - ','
+            - !Ref 'SubnetIdList'
+        - !If
+          - 3AZCondition
+          - !Select
+            - '2'
+            - !Split
+              - ','
+              - !Ref 'SubnetIdList'
+          - !Ref 'AWS::NoValue'
+      SecurityGroupIds:
+        - !Ref 'EndpointSecurityGroup'
+Outputs:
+  VPCEndpiontId:
+    Description: VPC Endpoint Id
+    Value: !Ref 'VPCEndpoint'

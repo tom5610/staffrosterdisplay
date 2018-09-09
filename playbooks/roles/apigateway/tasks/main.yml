@@ -1,0 +1,69 @@
+---
+
+- cloudformation_facts:
+    stack_name:                 "{{ EndpointStackName }}"
+  register:                     var_query_cfn_stack_facts
+
+- set_fact:
+    var_stack_outputs:              "{{ var_query_cfn_stack_facts.ansible_facts.cloudformation[ item ].stack_outputs }}"
+  with_items:                    "{{ EndpointStackName }}"
+
+- name:                         Collect the API ID
+  shell: |
+    aws apigateway get-rest-apis | jq '.items' | jq '.[] | select(.name=="{{ APIGatewayName }}") | .id'
+  register:                     var_query_api_gateway
+
+- set_fact:
+    var_api_id:                 "{{ var_query_api_gateway.stdout_lines[0] | replace('\"', '') }}"
+
+- debug:
+    msg:                        "the vpcendpoint: {{ var_stack_outputs.VPCEndpiontId }} and the API ID: {{ var_api_id }}"
+
+- name:                         Generate API Gateway resource policy
+  template:
+    src:                        resource-policy.json.j2
+    dest:                       ./roles/apigateway/files/resource-policy.json
+  vars:
+    t_Region:                   "{{ Region }}"
+    t_AWSAccountId:             "{{ AWSAccountId }}"
+    t_ApiId:                    "{{ var_api_id }}"
+    t_VPCEndpointId:            "{{ var_stack_outputs.VPCEndpiontId }}"
+
+- name:                         Tidy up Reousrce Policy file into oneline
+  replace:
+    path:                       ./roles/apigateway/files/resource-policy.json
+    regexp:                     '(\r\n|\r|\n)'
+    replace:                    ' '
+
+- set_fact:
+    var_raw_content:            " {{ lookup('file', './roles/apigateway/files/resource-policy.json') | trim | string }}"
+
+- set_fact:
+    var_raw:
+      - op: replace
+        path: /policy
+        value: "{{ var_raw_content }}"
+
+- set_fact:
+    var_patch_operations:       "{{ var_raw | string }}"
+
+- copy:
+    content: "{{ var_patch_operations }}"
+    dest: ./roles/apigateway/files/cmd-patch-operations
+
+# Can't figure out a proper way to run shell aws apigateway... directly due to Ansible convert quotes by default which
+# messes up 'patch-operations' parameter value.
+- name:  Update API Gateway Resource Policy
+  shell: |
+    printf "aws apigateway update-rest-api --rest-api-id {{ var_api_id }} --patch-operations '" >> ./roles/apigateway/files/cmd-update-apigateway.sh
+    cat ./roles/apigateway/files/cmd-patch-operations >> ./roles/apigateway/files/cmd-update-apigateway.sh
+    printf "'" >> ./roles/apigateway/files/cmd-update-apigateway.sh
+    sh ./roles/apigateway/files/cmd-update-apigateway.sh
+
+- file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - ./roles/apigateway/files/cmd-patch-operations
+    - ./roles/apigateway/files/cmd-update-apigateway.sh
+    - ./roles/apigateway/files/resource-policy.json

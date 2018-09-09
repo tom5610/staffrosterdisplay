@@ -1,0 +1,7 @@
+# AWS VPC Endpoint
+
+VPCId:                    vpc-XYZ
+NumberOfAZs:              2
+# subnet id list must not include space and with delimiter ','
+SubnetIdList:             subnet-ABC,subnet-XYZ
+EndpointIngressCIDR:      10.0.0.0/8

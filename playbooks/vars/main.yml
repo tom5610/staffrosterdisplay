@@ -1,0 +1,6 @@
+#
+
+AWSAccountId:             999
+EndpointStackName:        VPCEndpointStack
+Region:                   ap-southeast-2
+APIGatewayName:           dev-staffrosterdisplay

@@ -1,0 +1,7 @@
+---
+- hosts: localhost
+  become: False
+  vars_files:
+    - vars/main.yml
+  roles:
+    - vpcendpoint

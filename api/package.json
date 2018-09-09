@@ -1,0 +1,10 @@
+{
+  "name": "staffrosterdisplay",
+  "version": "1.0.0",
+  "description": "Staff Roster Display function",
+  "author": "Tom Liu",
+  "license": "MIT",
+  "dependencies": {
+    "ejs": "^2.6.1"
+  }
+}
