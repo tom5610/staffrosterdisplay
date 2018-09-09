@@ -64,14 +64,17 @@ ansible-playbook update-apigateway-resource-policy.yml -vvv
 ```
 curl -X GET https://{{VPC_Endpoint_DNS_Name}}/dev/staffrosterdisplay -H'Host:{{API_ID}}.execute-api.ap-southeast-2.amazonaws.com'
 ```
+
 	* VPC_Endpoint_DNS_Name - You may go to AWS VPC Console -> Endpoints View to find the DNS host name, such as vpce-0371244a9a8a896d1-ty9stt0p.execute-api.ap-southeast-2.vpce.amazonaws.com. Or run a command to find out the name:
 	```
 	aws ec2 describe-vpc-endpoints
 	```
+	
 	* API_ID - You may go to API Gateway Console -> Select the created API and you can find the API Gateway ID. Or run a command to find out the ID:
 	```
 	aws apigateway get-rest-apis
 	```
+	
 * Surely, if your on-prem connects to the VPC, you can run the test command on the a on-prem host.
 
 ## Notes
